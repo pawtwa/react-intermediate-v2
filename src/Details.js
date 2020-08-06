@@ -1,10 +1,13 @@
-import React from "react";
+import React, { lazy } from "react";
 import pet from "@frontendmasters/pet";
 import { navigate } from "@reach/router";
 import Carousel from "./Carousel";
-import Modal from "./Modal";
 import ErrorBoundary from "./ErrorBoundary";
 import ThemeContext from "./ThemeContext";
+import _ from "lodash";
+import moment from "moment";
+
+const Modal = lazy(() => import("./Modal"));
 
 class Details extends React.Component {
   state = { loading: true, showModal: false };
@@ -16,16 +19,14 @@ class Details extends React.Component {
           url: animal.url,
           name: animal.name,
           animal: animal.type,
-          location: `${animal.contact.address.city}, ${
-            animal.contact.address.state
-          }`,
+          location: `${animal.contact.address.city}, ${animal.contact.address.state}`,
           description: animal.description,
           media: animal.photos,
           breed: animal.breeds.primary,
-          loading: false
+          loading: false,
         });
       })
-      .catch(err => this.setState({ error: err }));
+      .catch((err) => this.setState({ error: err }));
   }
   toggleModal = () => this.setState({ showModal: !this.state.showModal });
   adopt = () => navigate(this.state.url);
@@ -41,7 +42,7 @@ class Details extends React.Component {
       description,
       media,
       name,
-      showModal
+      showModal,
     } = this.state;
 
     return (
