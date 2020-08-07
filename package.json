@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "description": "the Complete Intro to React, v5",
   "main": "src/App.js",
+  "homepage": "",
   "dependencies": {
     "@emotion/babel-preset-css-prop": "^10.0.27",
     "@emotion/core": "^10.0.28",
@@ -13,8 +14,11 @@
     "react-dom": "^16.13.1"
   },
   "devDependencies": {
+    "@babel/cli": "^7.10.5",
     "@babel/core": "^7.11.1",
+    "@babel/node": "^7.10.5",
     "@babel/plugin-proposal-class-properties": "^7.10.4",
+    "@babel/plugin-syntax-class-properties": "^7.10.4",
     "@babel/preset-env": "^7.11.0",
     "@babel/preset-react": "^7.10.4",
     "babel-eslint": "^10.1.0",
@@ -25,12 +29,16 @@
     "eslint-plugin-jsx-a11y": "^6.3.1",
     "eslint-plugin-react": "^7.20.5",
     "eslint-plugin-react-hooks": "^4.0.8",
+    "express": "^4.17.1",
     "parcel-bundler": "^1.12.4",
     "prettier": "^2.0.5"
   },
   "scripts": {
-    "build": "parcel build src/index.html --no-cache --public-url ./",
-    "clear-build-cache": "rm -rf .cache/ dist/",
+    "build": "parcel build src/index.html --no-cache --public-url /public/",
+    "start": "npm run build && babel-node server/index.js",
+    "clear-build-cache": "npm run clear-build-cache-1 && npm run clear-build-cache-2",
+    "clear-build-cache-1": "rmdir /Q /S .cache",
+    "clear-build-cache-2": "rmdir /Q /S dist",
     "dev": "parcel src/index.html",
     "dev:mock": "cross-env PET_MOCK=mock parcel src/index.html",
     "format": "prettier --write \"src/**/*.{js,jsx}\"",
