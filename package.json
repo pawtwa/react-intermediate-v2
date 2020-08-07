@@ -29,6 +29,7 @@
     "prettier": "^2.0.5"
   },
   "scripts": {
+    "build": "parcel build src/index.html --no-cache --public-url ./",
     "clear-build-cache": "rm -rf .cache/ dist/",
     "dev": "parcel src/index.html",
     "dev:mock": "cross-env PET_MOCK=mock parcel src/index.html",
