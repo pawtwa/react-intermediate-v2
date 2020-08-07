@@ -1,14 +1,20 @@
-import React, { useState, useEffect, useContext } from "react";
-import pet, { ANIMALS } from "@frontendmasters/pet";
+import React, {
+  useState,
+  useEffect,
+  useContext,
+  FunctionComponent,
+} from "react";
+import pet, { ANIMALS, Animal } from "@frontendmasters/pet";
 import useDropdown from "./useDropdown";
 import Results from "./Results";
 import ThemeContext from "./ThemeContext";
+import { RouteComponentProps } from "@reach/router";
 
-const SearchParams = () => {
+const SearchParams: FunctionComponent<RouteComponentProps<any>> = () => {
   const [theme, setTheme] = useContext(ThemeContext);
   const [location, updateLocation] = useState("Seattle, WA");
-  const [breeds, updateBreeds] = useState([]);
-  const [pets, setPets] = useState([]);
+  const [breeds, updateBreeds] = useState<string[]>([]);
+  const [pets, setPets] = useState<Animal[]>([]);
   const [animal, AnimalDropdown] = useDropdown("Animal", "dog", ANIMALS);
   const [breed, BreedDropdown, updateBreed] = useDropdown("Breed", "", breeds);
 
@@ -28,9 +34,9 @@ const SearchParams = () => {
     updateBreeds([]);
     updateBreed("");
 
-    pet.breeds(animal).then(({ breeds }) => {
-      console.log("breeds", breeds);
-      const breedStrings = breeds.map(({ name }) => name);
+    pet.breeds(animal).then(({ breeds: allBreeds }) => {
+      console.log("breeds", allBreeds);
+      const breedStrings = allBreeds.map(({ name }) => name);
       updateBreeds(breedStrings);
     }, console.error);
   }, [animal]);
