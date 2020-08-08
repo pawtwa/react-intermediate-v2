@@ -1,10 +1,10 @@
-import { createContext } from "react";
+// import { createContext } from "react";
 
-const ThemeContext = createContext<[string, (theme: string) => void]>([
-  "green",
-  () => {
-    "";
-  },
-]);
+// const ThemeContext = createContext<[string, (theme: string) => void]>([
+//   "green",
+//   () => {
+//     "";
+//   },
+// ]);
 
-export default ThemeContext;
+// export default ThemeContext;

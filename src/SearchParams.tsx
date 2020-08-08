@@ -1,29 +1,49 @@
 import React, {
   useState,
   useEffect,
-  useContext,
+  // useContext,
   FunctionComponent,
 } from "react";
-import pet, { ANIMALS, Animal } from "@frontendmasters/pet";
+import { RouteComponentProps } from "@reach/router";
+// @ts-ignore
+import { connect, MapDispatchToProps, MapStateToProps } from "react-redux";
+import pet, { ANIMALS, Animal, AnimalsParams } from "@frontendmasters/pet";
 import useDropdown from "./useDropdown";
 import Results from "./Results";
-import ThemeContext from "./ThemeContext";
-import { RouteComponentProps } from "@reach/router";
+import { AppState } from "./store/reducers";
+import changeTheme from "./store/actions/changeTheme";
+import changeLoacation from "./store/actions/changeLocation";
+import { Dispatch, AnyAction } from "redux";
+// import ThemeContext from "./ThemeContext";
 
-const SearchParams: FunctionComponent<RouteComponentProps<any>> = () => {
-  const [theme, setTheme] = useContext(ThemeContext);
-  const [location, updateLocation] = useState("Seattle, WA");
+interface IStoreProps {
+  themeState: string;
+  locationState: string;
+}
+
+interface IDispatchProps {
+  setTheme: (theme: string) => AnyAction;
+  updateLocation: (theme: string) => AnyAction;
+}
+
+type PropsType = RouteComponentProps & IStoreProps & IDispatchProps;
+
+const SearchParams: FunctionComponent<PropsType> = (props) => {
+  // const [theme, setTheme] = useContext(ThemeContext);
+  // const [location, updateLocation] = useState("Seattle, WA");
   const [breeds, updateBreeds] = useState<string[]>([]);
   const [pets, setPets] = useState<Animal[]>([]);
   const [animal, AnimalDropdown] = useDropdown("Animal", "dog", ANIMALS);
   const [breed, BreedDropdown, updateBreed] = useDropdown("Breed", "", breeds);
 
   async function requestPets() {
-    const { animals } = await pet.animals({
-      location,
+    const params: AnimalsParams = {
+      location: props.locationState,
       breed,
       type: animal,
-    });
+    };
+    console.log("requestPets - params", params);
+    const { animals } = await pet.animals(params);
 
     console.log("animals", animals);
 
@@ -53,19 +73,26 @@ const SearchParams: FunctionComponent<RouteComponentProps<any>> = () => {
           Location
           <input
             id="location"
-            value={location}
+            defaultValue={props.locationState}
             placeholder="Location"
-            onChange={(e) => updateLocation(e.target.value)}
+            onBlur={(e) =>
+              props.updateLocation ? props.updateLocation(e.target.value) : null
+            }
           />
         </label>
         <AnimalDropdown />
         <BreedDropdown />
-        <label htmlFor="location">
+        <label htmlFor="theme">
           Theme
           <select
-            value={theme}
-            onChange={(e) => setTheme(e.target.value)}
-            onBlur={(e) => setTheme(e.target.value)}
+            id="theme"
+            value={props.themeState}
+            onChange={(e) =>
+              props.setTheme ? props.setTheme(e.target.value) : null
+            }
+            onBlur={(e) =>
+              props.setTheme ? props.setTheme(e.target.value) : null
+            }
           >
             <option value="peru">Peru</option>
             <option value="darkblue">Dark Blue</option>
@@ -73,11 +100,29 @@ const SearchParams: FunctionComponent<RouteComponentProps<any>> = () => {
             <option value="mediumorchid">Medium Orchid</option>
           </select>
         </label>
-        <button style={{ backgroundColor: theme }}>Submit</button>
+        <button style={{ backgroundColor: props.themeState }}>Submit</button>
       </form>
       <Results pets={pets} />
     </div>
   );
 };
 
-export default SearchParams;
+const mapStateToProps: MapStateToProps<IStoreProps, PropsType, AppState> = ({
+  theme,
+  location,
+}: AppState): IStoreProps => ({
+  themeState: theme,
+  locationState: location,
+});
+
+const mapDispatchToProps: MapDispatchToProps<IDispatchProps, IStoreProps> = (
+  dispatch: Dispatch<AnyAction>
+) => ({
+  setTheme: (theme: string) => dispatch(changeTheme(theme)),
+  updateLocation: (location: string) => dispatch(changeLoacation(location)),
+});
+
+export default connect<IStoreProps, IDispatchProps, PropsType, AppState>(
+  mapStateToProps,
+  mapDispatchToProps
+)(SearchParams);

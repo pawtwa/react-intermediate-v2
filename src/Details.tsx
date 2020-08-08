@@ -3,20 +3,33 @@ import pet, { Photo } from "@frontendmasters/pet";
 import { navigate, RouteComponentProps } from "@reach/router";
 import Carousel from "./Carousel";
 import ErrorBoundary from "./ErrorBoundary";
-import ThemeContext from "./ThemeContext";
+// import ThemeContext from "./ThemeContext";
 import Modal from "./Modal";
+import { MapStateToProps, connect } from "react-redux";
+import { AppState } from "./store/reducers";
 
 // const Modal = lazy(() => import("./Modal"));
 
-class Details extends React.Component<
-  RouteComponentProps<{ id: string }>,
-  { [key: string]: any }
-> {
-  public state: { media: Photo[]; [key: string]: any } = {
-    loading: true,
-    showModal: false,
-    media: [],
-  };
+interface IStoreProps {
+  themeState: string;
+}
+
+type PropsType = RouteComponentProps<{ id: string }> & IStoreProps;
+
+interface IState {
+  media: Photo[];
+  [key: string]: any;
+}
+
+class Details extends React.Component<PropsType, IState> {
+  constructor(props: Readonly<PropsType>) {
+    super(props);
+    this.state = {
+      loading: true,
+      showModal: false,
+      media: [],
+    };
+  }
 
   public componentDidMount() {
     if (!this.props.id) {
@@ -64,7 +77,13 @@ class Details extends React.Component<
         <div>
           <h1>{name}</h1>
           <h2>{`${animal} — ${breed} — ${location}`}</h2>
-          <ThemeContext.Consumer>
+          <button
+            onClick={this.toggleModal}
+            style={{ backgroundColor: this.props.themeState }}
+          >
+            Adopt {name}
+          </button>
+          {/* <ThemeContext.Consumer>
             {([theme]) => (
               <button
                 onClick={this.toggleModal}
@@ -73,7 +92,7 @@ class Details extends React.Component<
                 Adopt {name}
               </button>
             )}
-          </ThemeContext.Consumer>
+          </ThemeContext.Consumer> */}
           <p>{description}</p>
           {showModal ? (
             <Modal>
@@ -90,12 +109,23 @@ class Details extends React.Component<
   }
 }
 
-export default function DetailsErrorBoundary(
-  props: RouteComponentProps<{ id: string }>
-) {
+const mapStateToProps: MapStateToProps<IStoreProps, PropsType, AppState> = ({
+  theme,
+}: AppState): IStoreProps => ({
+  themeState: theme,
+});
+
+const DetailsStoreConnected = connect<
+  IStoreProps,
+  undefined,
+  PropsType,
+  AppState
+>(mapStateToProps)(Details);
+
+export default function DetailsErrorBoundary(props: PropsType) {
   return (
     <ErrorBoundary>
-      <Details {...props} />
+      <DetailsStoreConnected {...props} />
     </ErrorBoundary>
   );
 }
