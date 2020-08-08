@@ -8,7 +8,7 @@ interface IProps {
 
 const Results: FunctionComponent<IProps> = ({ pets }) => {
   return (
-    <div className="search">
+    <div className="search" data-testid="search-result">
       {!pets.length ? (
         <h1>No Pets Found</h1>
       ) : (

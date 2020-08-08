@@ -36,18 +36,17 @@ const SearchParams: FunctionComponent<PropsType> = (props) => {
   const [animal, AnimalDropdown] = useDropdown("Animal", "dog", ANIMALS);
   const [breed, BreedDropdown, updateBreed] = useDropdown("Breed", "", breeds);
 
-  async function requestPets() {
+  function requestPets() {
     const params: AnimalsParams = {
       location: props.locationState,
       breed,
       type: animal,
     };
     console.log("requestPets - params", params);
-    const { animals } = await pet.animals(params);
-
-    console.log("animals", animals);
-
-    setPets(animals || []);
+    pet.animals(params).then(({ animals }) => {
+      console.log("animals", animals);
+      setPets(animals || []);
+    });
   }
 
   useEffect(() => {
